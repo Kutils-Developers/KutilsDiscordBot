@@ -9,7 +9,7 @@ Requirements: Python 3.7+
 3. Create a `.env` file at the root. Populate it as follows:
 ```
 MONGO_CONN=your_mongo_connection
-DISC_TOKE=your_discord_token
+DISC_TOKEN=your_discord_token
 ```
 
 
