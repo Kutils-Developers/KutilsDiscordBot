@@ -5,7 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 load_dotenv()
 
-cogs = ['kutils', 'help']
+cogs = ['kutils', 'help', 'misc']
 
 client = commands.Bot(command_prefix = '.kutils ', case_insensitive = True)
 

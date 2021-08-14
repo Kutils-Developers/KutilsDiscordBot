@@ -1,42 +1,43 @@
 from __future__ import annotations
 
-from typing import List, Optional
-from pathlib import Path
-from datetime import datetime
+from dataclasses import dataclass
+from typing import List, Dict
+from dotenv import load_dotenv
 
-class Instance:
-    install_date: str
-    server_id: int
-    channel: str
-    jobs: List[SheetWatcher]
 
-    def __init__(self, server_id: str, channel: str):
-        self.server_id = server_id
-        self.channel = channel
-        self.install_date = datetime.now().isoformat()
-        self.jobs = []
+load_dotenv()
 
-    def add_job(self, job: SheetWatcher):
-        self.jobs.append(job)
 
-    def write(self):
-        # write to mongo
-        return None
+mock_db = {}
 
-    @staticmethod
-    def from_json_file(p: Path) -> Instance:
-        return None
+class InstanceTest:
+    id: int
+    names: List[str]
 
-class SheetWatcher:
-    tracked_sheet: TrackedSheet
-    utc_offset: int
+    def __init__(self, id):
+        self.id = id
 
-class TrackedSheet:
-    sheet: str
-    cell_ranges: List[CellRange]
 
-class CellRange:
-    range: List[List[int]]
+def create_instance(id):
+    instance = InstanceTest(id)
+    mock_db[id] = instance
+
+create_instance(872714949594583040)
+
+def add_sheet_watcher(id, name):
+    print("add sheet watcher")
+    print(mock_db)
+    print(id in mock_db.keys())
+    mock_db[id].names.append(name)
+    print(name)
+
+
+def get_sheet_watchers(id):
+    return mock_db[id].names
+
+
+
+
 
 '''
 PUBLIC (DISCORD BOT)
