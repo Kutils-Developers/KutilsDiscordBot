@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from pathlib import Path
 from datetime import datetime
 from api.dataservices.sheets.utils import Cell
@@ -29,11 +29,16 @@ class SheetWatcher:
 
 @dataclass
 class Instance:
-    """Assume that Instances are uniquely defined by guild_id"""
+    """Bot Instance API Object. Assumes that Instances are uniquely defined by guild_id"""
     install_date: str
     guild_id: int
-    channel: Optional[str] = None
     jobs: Optional[Dict[str, SheetWatcher]] = None
+
+    # Persistence
+
+    @staticmethod
+    def read_from(guild_id: int) -> Instance:
+        return from_local(guild_id)
 
     @staticmethod
     def from_local(guild_id: int) -> Instance:
@@ -53,8 +58,16 @@ class Instance:
             fp.write(jsons.dumps(self))
         return local_path
 
-    # def add_job(self, sw: SheetWatcher, name: str) -> Status:
-    #     if name in self.jobs.keys():
-    #         return Status(500, 'existing SheetWatcher with same name')
-    #     self.jobs[name] = sw
-    #     return Status(200)
+    # Behavior
+
+    def add_job(self, sw: SheetWatcher, name: str) -> Status:
+        if name in self.jobs.keys():
+            return Status(500, 'existing SheetWatcher with same name')
+        self.jobs[name] = sw
+        return Status(200)
+    
+    def pop_job(self, name: str) -> Tuple[Status, SheetWatcher]:
+        if name in self.jobs.keys():
+            return self.jobs.pop(name), Status(200)
+        return Status(500, 'No SheetWatcher with matching name')
+

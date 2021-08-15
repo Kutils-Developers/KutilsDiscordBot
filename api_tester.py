@@ -1,6 +1,8 @@
 """
 Debug the API manually and trigger commands from this interface.
 """
+import sys
+sys.dont_write_bytecode = True
 
 import api
 from api.models import Instance
