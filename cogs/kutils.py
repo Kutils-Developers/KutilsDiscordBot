@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 from api import *
+from api.models import SheetWatcher
+
+
 
 # Kutils Cog
 class Kutils(commands.Cog):
@@ -8,19 +11,18 @@ class Kutils(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def add(self, ctx, name):
-        await ctx.send("add")
-        add_sheet_watcher(ctx.guild.id, name)
+    async def add(self, ctx, name, time):
+        await ctx.send(f'adding {name}...')
+        add_sheet_watcher(ctx.guild.id, name, time)
 
     @commands.command()
     async def remove(self, ctx, name):
-        await ctx.send("remove")
+        await ctx.send(f'removing {name}...')
+        pop_sheet_watcher(ctx.guild.id, name)
 
     @commands.command()
     async def show(self, ctx):
         await ctx.send("show")
-        for name in get_sheet_watchers(ctx.guild.id):
-            print(name)
 
     @commands.command()
     async def check(self, ctx):

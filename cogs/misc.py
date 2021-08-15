@@ -1,4 +1,6 @@
 from discord.ext import commands
+from api import *
+
 
 # Misc Cog
 class Misc(commands.Cog):
@@ -12,8 +14,12 @@ class Misc(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        # add guild to mongo
-        print(guild.id)
+        create_instance(guild.id)
+
+    @commands.command()
+    async def rejoin(self, ctx):
+        await ctx.send("rejoining...")
+        create_instance(ctx.guild.id)
 
 
 def setup(client):

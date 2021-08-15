@@ -8,10 +8,11 @@ from dataclasses import dataclass
 from typing import List, Dict
 from dotenv import load_dotenv
 from pathlib import Path
+from api.models import Instance, SheetWatcher
+import datetime
 
 
 load_dotenv()
-
 
 
 '''
@@ -23,6 +24,7 @@ LOCAL_OBJECT_PATH = Path(LOCAL_OBJECT_PATH)
 
 PATHS = [LOCAL_OBJECT_PATH]
 
+
 def init_paths():
     for p in PATHS:
         if not p.exists():
@@ -31,41 +33,33 @@ def init_paths():
         else:
             print(f'{p} exists')
 
+
 init_paths()
 
 
 #@InstanceOp
 # make decorator that gives instance automatically + error handling to FE
-def add_job():
-    return None
+
+def create_instance(guild_id):
+    # TODO ensure instance of guild is not already present in db
+    print(f'Creating instance {guild_id}...')
+    instance = Instance(datetime.datetime.now(), guild_id)
+    instance.write()
 
 
-mock_db = {}
-
-class InstanceTest:
-    id: int
-    names: List[str]
-
-    def __init__(self, id):
-        self.id = id
+def add_sheet_watcher(guild_id, name, time):
+    print(f'Instance {guild_id}: adding {name}...')
+    instance = Instance.read_from(guild_id)
+    sw = SheetWatcher(name, time)
+    instance.add_job(sw)
+    instance.write()
 
 
-def create_instance(id):
-    instance = InstanceTest(id)
-    mock_db[id] = instance
-
-# create_instance(872714949594583040)
-
-def add_sheet_watcher(id, name):
-    print("add sheet watcher")
-    print(mock_db)
-    print(id in mock_db.keys())
-    mock_db[id].names.append(name)
-    print(name)
-
-
-def get_sheet_watchers(id):
-    return mock_db[id].names
+def pop_sheet_watcher(guild_id, name):
+    print(f'Instance {guild_id}: removing {name}...')
+    instance = Instance.read_from(guild_id)
+    instance.pop_job(name)
+    instance.write()
 
 
 '''
