@@ -14,8 +14,8 @@ import api
 from api.models import Instance
 import jsons
 
-if __name__=='__main__':
-    print('Running API tester')
+if __name__ == '__main__':
+    logging.info('Running API tester')
     api.create_instance(123)
     api.add_sheet_watcher(123, 'hi', 10)
-    api.pop_sheet_watcher(123, 'hi')
+    api.pop_sheet_watcher(123, name='hi')
