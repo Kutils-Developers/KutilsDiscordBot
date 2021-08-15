@@ -6,7 +6,9 @@ sys.dont_write_bytecode = True
 
 # Allows for full stacktrace prints
 import logging
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+import coloredlogs
+#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+coloredlogs.install(level='DEBUG')
 
 import api
 from api.models import Instance

@@ -1,14 +1,12 @@
 from __future__ import annotations
-from api.support import APIError
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional
 from pathlib import Path
 from datetime import datetime
-from api.dataservices.sheets.utils import Cell
+from api.dataservices.google.sheets import Cell
 from api.support import APIError
 import api
-from utils import Status
 import jsons
 import logging
 
@@ -51,8 +49,8 @@ class Instance:
 
     def add_job(self, sw: SheetWatcher):
         if sw.name in self.get_job_names():
-            raise APIError(self.__class__ + self.__name__,
-                           'existing SheetWatcher with same name')
+            # TODO see if we just make this overwrite  (FE will handle rest)
+            raise APIError('existing SheetWatcher with same name')
         self.jobs.append(sw)
 
     def pop_job(self, name: str) -> SheetWatcher:
@@ -61,15 +59,13 @@ class Instance:
                        if self.jobs[i].name == name)
             return self.jobs.pop(idx)
         except StopIteration:
-            raise APIError(self.__class__ + self.__name__,
-                           'No SheetWatcher with matching name')
+            raise APIError('No SheetWatcher with matching name')
 
     def get_job(self, name):
         try: 
             return next(sw for sw in self.jobs if sw.name == name)
         except StopIteration:
-           raise APIError(self.__class__ + self.__name__,
-                           'No SheetWatcher with matching name') 
+           raise APIError('No SheetWatcher with matching name')
     
     def get_jobs(self):
         return self.jobs
@@ -87,7 +83,7 @@ class Instance:
             with open(local_path, 'r') as fp:
                 inst = jsons.loads(fp.read(), Instance)
                 return inst
-        raise APIError('Instance', 'no matching Instance found')
+        raise APIError('no matching Instance found')
 
     def write(self):
         return self.write_local()
@@ -95,8 +91,8 @@ class Instance:
     def write_local(self) -> Path:
         local_path = api.LOCAL_OBJECT_PATH / str(self.guild_id)
         if local_path.exists():
-            logging.warn(
-                f'writing Instance {str(self)} to existing path {str(local_path)}')
+            logging.warning(
+                f'Path {str(local_path)} already exists for Instance {str(self)}, overwriting')
         with open(local_path, 'w') as fp:
             fp.write(jsons.dumps(self))
         return local_path

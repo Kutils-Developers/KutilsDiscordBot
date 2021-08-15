@@ -15,7 +15,6 @@ import logging
 
 load_dotenv()
 
-
 '''
 Defining constants for the API
 '''
@@ -37,10 +36,15 @@ def init_paths():
 
 init_paths()
 
-def InstanceOp(func):
-    """Decorator for operations that run on an existing Instance. Reads & writes the relevant instance file and handles errors"""
+
+def instance_op(func):
+    """
+    Decorator for operations that run on an existing Instance.
+    Reads & writes the relevant instance file and handles errors
+    """
+
     @functools.wraps(func)
-    def wrapped(inst_key, *args, **kwargs):
+    def wrapper(inst_key, *args, **kwargs):
         logging.info('-----------------------------------------')
         logging.info(f'EXECUTING COMMAND {func.__name__}')
         logging.debug(f'ARGS: {args}')
@@ -59,27 +63,30 @@ def InstanceOp(func):
             return None
         logging.info('-----------------------------------------')
         return inst
-    return wrapped
+
+    return wrapper
 
 
 # Behavior
 
 def create_instance(guild_id) -> Instance:
     # TODO ensure instance of guild is not already present in db
-    print(f'Creating and writing instance {guild_id}...')
+    logging.info(f'Creating and writing instance {guild_id}...')
     instance = Instance(guild_id=guild_id)
     instance.write()
     return instance
 
-@InstanceOp
+
+@instance_op
 def add_sheet_watcher(instance: Instance, name, time):
-    print(f'Instance {instance}: adding {name}...')
+    logging.info(f'Instance {instance}: adding {name}...')
     sw = SheetWatcher(name=name, utc_offset=time)
     instance.add_job(sw)
 
-@InstanceOp
+
+@instance_op
 def pop_sheet_watcher(instance: Instance, name):
-    print(f'Instance {instance}: removing {name}...')
+    logging.info(f'Instance {instance}: removing {name}...')
     instance.pop_job(name=name)
 
 

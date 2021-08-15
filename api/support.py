@@ -1,7 +1,7 @@
-def APIError(Exception):
+class APIError(Exception):
     """
     Base level API Error
     """
-    def __init__(self, msg, expr):
-        self.msg = msg
-        self.expr = expr
+
+    def __init__(self, msg, *args, **kwargs):
+        super().__init__(msg, *args, **kwargs)
