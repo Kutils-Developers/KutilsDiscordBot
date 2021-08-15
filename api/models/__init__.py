@@ -32,13 +32,13 @@ class Instance:
     """Bot Instance API Object. Assumes that Instances are uniquely defined by guild_id"""
     install_date: str
     guild_id: int
-    jobs: Optional[Dict[str, SheetWatcher]] = None
+    jobs: Optional[Dict[str, SheetWatcher]] = {}
 
     # Persistence
 
     @staticmethod
     def read_from(guild_id: int) -> Instance:
-        return from_local(guild_id)
+        return Instance.from_local(guild_id)
 
     @staticmethod
     def from_local(guild_id: int) -> Instance:
