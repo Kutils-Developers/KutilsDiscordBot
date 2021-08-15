@@ -18,9 +18,8 @@ class Help(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             await ctx.send("Invalid command. Type '.kutils help' for more info.")
 
-
+# TODO implement custom help command
 class CustomHelp(commands.HelpCommand):
-
     async def send_bot_help(self, mapping):
         return await super().send_bot_help(mapping)
 

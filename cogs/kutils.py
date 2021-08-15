@@ -26,6 +26,7 @@ class Kutils(commands.Cog):
     async def check(self, ctx):
         await ctx.send("check")
 
+
 def setup(client):
     client.add_cog(Kutils(client))
     print("Kutils cog initializing...")

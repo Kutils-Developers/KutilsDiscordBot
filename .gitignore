@@ -156,3 +156,5 @@ fabric.properties
 ### KUTILS SPECIFIC GITIGNORE BELOW
 # local objects
 objects/
+
+api_tester.py
