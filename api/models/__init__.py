@@ -1,13 +1,16 @@
 from __future__ import annotations
+from api.support import APIError
 
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Tuple
 from pathlib import Path
 from datetime import datetime
 from api.dataservices.sheets.utils import Cell
+from api.support import APIError
 import api
 from utils import Status
 import jsons
+import logging
 
 
 @dataclass
@@ -26,7 +29,7 @@ class SheetWatcher:
     """Assumes that a SheetWatcher is uniquely defined by their name"""
     name: str
     utc_offset: int
-    tracked_sheet: TrackedSheet
+    tracked_sheet: Optional[TrackedSheet] = None
 
     def __eq__(self, other):
         if type(other) == type(self):
@@ -43,23 +46,33 @@ class Instance:
 
     # Behavior
 
-    def __get_job_names(self):
+    def get_job_names(self):
         return [sw.name for sw in self.jobs]
 
-    def add_job(self, sw: SheetWatcher) -> Status:
-        if sw.name in self.__get_job_names():
-            return Status(500, 'existing SheetWatcher with same name')
+    def add_job(self, sw: SheetWatcher):
+        if sw.name in self.get_job_names():
+            raise APIError(self.__class__ + self.__name__,
+                           'existing SheetWatcher with same name')
         self.jobs.append(sw)
-        return Status(200)
-    
-    def pop_job(self, name: str) -> Tuple[Status, SheetWatcher]:
-        idx = next(i for i in range(self.jobs) if self.jobs[i].name == name)
-        if idx:
-            return Status(200), self.jobs.pop(idx)
-        return Status(500, 'No SheetWatcher with matching name'), None
+
+    def pop_job(self, name: str) -> SheetWatcher:
+        try:
+            idx = next(i for i in range(len(self.jobs))
+                       if self.jobs[i].name == name)
+            return self.jobs.pop(idx)
+        except StopIteration:
+            raise APIError(self.__class__ + self.__name__,
+                           'No SheetWatcher with matching name')
 
     def get_job(self, name):
-        return next(sw for sw in self.jobs if sw.name == name)
+        try: 
+            return next(sw for sw in self.jobs if sw.name == name)
+        except StopIteration:
+           raise APIError(self.__class__ + self.__name__,
+                           'No SheetWatcher with matching name') 
+    
+    def get_jobs(self):
+        return self.jobs
 
     # Persistence
 
@@ -74,13 +87,16 @@ class Instance:
             with open(local_path, 'r') as fp:
                 inst = jsons.loads(fp.read(), Instance)
                 return inst
-        return None
+        raise APIError('Instance', 'no matching Instance found')
 
     def write(self):
         return self.write_local()
 
     def write_local(self) -> Path:
         local_path = api.LOCAL_OBJECT_PATH / str(self.guild_id)
+        if local_path.exists():
+            logging.warn(
+                f'writing Instance {str(self)} to existing path {str(local_path)}')
         with open(local_path, 'w') as fp:
             fp.write(jsons.dumps(self))
         return local_path

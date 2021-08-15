@@ -1,16 +1,17 @@
 """
-CONTROLLER FILE
+Controller file -- provides functions for the operations of the bot.
 """
 
 from __future__ import annotations
-
+from api.support import APIError
 from dataclasses import dataclass
 from typing import List, Dict
 from dotenv import load_dotenv
 from pathlib import Path
 from api.models import Instance, SheetWatcher
 import datetime
-
+import functools
+import logging
 
 load_dotenv()
 
@@ -29,43 +30,62 @@ def init_paths():
     for p in PATHS:
         if not p.exists():
             p.mkdir()
-            print(f'{p} made')
+            logging.info(f'{p} made')
         else:
-            print(f'{p} exists')
+            logging.info(f'{p} exists')
 
 
 init_paths()
 
+def InstanceOp(func):
+    """Decorator for operations that run on an existing Instance. Reads & writes the relevant instance file and handles errors"""
+    @functools.wraps(func)
+    def wrapped(inst_key, *args, **kwargs):
+        logging.info('-----------------------------------------')
+        logging.info(f'EXECUTING COMMAND {func.__name__}')
+        logging.debug(f'ARGS: {args}')
+        logging.debug(f'KWARGS: {kwargs}')
+        logging.info(f'~~~')
+        try:
+            logging.debug(f'Accessing Instance with id {inst_key}')
+            inst = Instance.read_from(guild_id=inst_key)
+            logging.info(f'Instance accessed {str(inst)}')
+            func(inst, *args, **kwargs)
+            logging.debug(f'Writing instance {str(inst)}')
+            p = inst.write()
+            logging.info(f'Instance written at {str(p)}')
+        except Exception as e:
+            logging.error(msg=f'Exception when doing InstanceOp: {str(e)}, returning None')
+            return None
+        logging.info('-----------------------------------------')
+        return inst
+    return wrapped
 
-#@InstanceOp
-# make decorator that gives instance automatically + error handling to FE
 
-def create_instance(guild_id):
+# Behavior
+
+def create_instance(guild_id) -> Instance:
     # TODO ensure instance of guild is not already present in db
-    print(f'Creating instance {guild_id}...')
-    instance = Instance(datetime.datetime.now(), guild_id)
+    print(f'Creating and writing instance {guild_id}...')
+    instance = Instance(guild_id=guild_id)
     instance.write()
+    return instance
 
-
-def add_sheet_watcher(guild_id, name, time):
-    print(f'Instance {guild_id}: adding {name}...')
-    instance = Instance.read_from(guild_id)
-    sw = SheetWatcher(name, time)
+@InstanceOp
+def add_sheet_watcher(instance: Instance, name, time):
+    print(f'Instance {instance}: adding {name}...')
+    sw = SheetWatcher(name=name, utc_offset=time)
     instance.add_job(sw)
-    instance.write()
 
-
-def pop_sheet_watcher(guild_id, name):
-    print(f'Instance {guild_id}: removing {name}...')
-    instance = Instance.read_from(guild_id)
-    instance.pop_job(name)
-    instance.write()
+@InstanceOp
+def pop_sheet_watcher(instance: Instance, name):
+    print(f'Instance {instance}: removing {name}...')
+    instance.pop_job(name=name)
 
 
 '''
-
 BOT COMMANDS
-
+~~~
 add(name, sheetLink, cells, time) - Create a new SheetWatcher with the given properties.
 
 delete(name) - Delete the SheetWatcher with the given name.
@@ -76,7 +96,7 @@ check() - Perform a check on all active SheetWatchers. Return the dead cells ass
 
 
 REPO COMMANDS
-
+~~~
 create_instance(guild_id)
 
 add_sheet_watcher(guild_id, name, TrackedSheet, CellRange, time) - add SheetWatcher to Instance
@@ -89,14 +109,7 @@ get_updates(guild_id, name) - perform check on SheetWatcher with given name
 
 
 PUNTED
-
+~~~
 analytics() - Return data analytics and usage.
-
-
-
-
-
-
-
 
 '''

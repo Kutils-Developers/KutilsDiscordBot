@@ -7,6 +7,7 @@ load_dotenv()
 
 
 class Status:
+    """Deprecated HTML-like status codes."""
     code: int
     stat_dict: Dict[int, str] = {
         200: 'OK',
