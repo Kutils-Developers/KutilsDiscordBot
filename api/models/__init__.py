@@ -23,6 +23,7 @@ class TrackedSheet:
 
 @dataclass
 class SheetWatcher:
+    """Assumes that a SheetWatcher is uniquely defined by their name"""
     name: str
     utc_offset: int
     tracked_sheet: TrackedSheet
@@ -36,9 +37,29 @@ class SheetWatcher:
 @dataclass
 class Instance:
     """Bot Instance API Object. Assumes that Instances are uniquely defined by guild_id"""
-    install_date: str
     guild_id: int
+    install_date: str = str(datetime.now())
     jobs: Optional[List[SheetWatcher]] = field(default_factory=list)
+
+    # Behavior
+
+    def __get_job_names(self):
+        return [sw.name for sw in self.jobs]
+
+    def add_job(self, sw: SheetWatcher) -> Status:
+        if sw.name in self.__get_job_names():
+            return Status(500, 'existing SheetWatcher with same name')
+        self.jobs.append(sw)
+        return Status(200)
+    
+    def pop_job(self, name: str) -> Tuple[Status, SheetWatcher]:
+        idx = next(i for i in range(self.jobs) if self.jobs[i].name == name)
+        if idx:
+            return Status(200), self.jobs.pop(idx)
+        return Status(500, 'No SheetWatcher with matching name'), None
+
+    def get_job(self, name):
+        return next(sw for sw in self.jobs if sw.name == name)
 
     # Persistence
 
@@ -57,26 +78,9 @@ class Instance:
 
     def write(self):
         return self.write_local()
-    
+
     def write_local(self) -> Path:
         local_path = api.LOCAL_OBJECT_PATH / str(self.guild_id)
         with open(local_path, 'w') as fp:
             fp.write(jsons.dumps(self))
         return local_path
-
-    # Behavior
-
-    def __get_job_names(self):
-        return [sw.name for sw in self.jobs]
-
-    def add_job(self, sw: SheetWatcher) -> Status:
-        if sw in self.jobs:
-            return Status(500, 'existing SheetWatcher with same name')
-        self.jobs.append(sw)
-        return Status(200)
-    
-    def pop_job(self, name: str) -> Tuple[Status, Optional[SheetWatcher]]:
-        idx = [i for i in range(self.__get_job_names()) if self.__get_job_names()[i] == name]
-        if idx:
-            return Status(200), self.jobs.pop(idx[0])
-        return Status(500, 'No SheetWatcher with matching name'), None
