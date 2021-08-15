@@ -1,11 +1,43 @@
+"""
+CONTROLLER FILE
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List, Dict
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 load_dotenv()
+
+
+
+'''
+Defining constants for the API
+'''
+
+LOCAL_OBJECT_PATH = 'objects/'
+LOCAL_OBJECT_PATH = Path(LOCAL_OBJECT_PATH)
+
+PATHS = [LOCAL_OBJECT_PATH]
+
+def init_paths():
+    for p in PATHS:
+        if not p.exists():
+            p.mkdir()
+            print(f'{p} made')
+        else:
+            print(f'{p} exists')
+
+init_paths()
+
+
+#@InstanceOp
+# make decorator that gives instance automatically + error handling to FE
+def add_job():
+    return None
 
 
 mock_db = {}
@@ -65,11 +97,10 @@ get_sheetwatchers(Instance)
 
 check() - Perform a check on all active SheetWatchers. Return the dead cells associated with each.
 
-get_updates(Instance)
-
-analytics() - Return data analytics and usage.
 
 # punt
+
+analytics() - Return data analytics and usage.
 
 
 PRIVATE (API)

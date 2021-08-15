@@ -153,3 +153,6 @@ fabric.properties
 # macOS temp files
 .DS_Store
 
+### KUTILS SPECIFIC GITIGNORE BELOW
+# local objects
+objects/
