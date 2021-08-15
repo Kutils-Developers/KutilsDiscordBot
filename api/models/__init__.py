@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 from pathlib import Path
 from datetime import datetime
-from api.dataservices.google.sheets import Cell
+from api.dataservices.google.sheets.utils import Cell
 from api.support import APIError
 import api
 import jsons

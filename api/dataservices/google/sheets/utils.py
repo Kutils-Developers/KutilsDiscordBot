@@ -20,10 +20,6 @@ class Cell:
         return self.sheet + ' ' + self.col_idx + str(self.row_idx)
 
 
-
-
-
-
 def get_column_alphabetical_index_from_zero_indexed_num(col_idx: int) -> str:
     """Convert zero-index column number to alphabetical base-26 (e.g. 0 -> 'A', 27 -> 'AA'"""
     num_letters_alphabet = 26
