@@ -4,7 +4,6 @@ from api import *
 from api.models import SheetWatcher
 
 
-
 # Kutils Cog
 class Kutils(commands.Cog):
     def __init__(self, client):
@@ -22,7 +21,8 @@ class Kutils(commands.Cog):
 
     @commands.command()
     async def show(self, ctx):
-        await ctx.send("show")
+        await ctx.send("showing jobs...")
+        jobs = get_sheet_watchers(ctx.guild.id)
 
     @commands.command()
     async def check(self, ctx):

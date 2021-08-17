@@ -3,13 +3,12 @@ Controller file -- provides functions for the operations of the bot.
 """
 
 from __future__ import annotations
+
+from typing import List
 from api.support import APIError
-from dataclasses import dataclass
-from typing import List, Dict
 from dotenv import load_dotenv
 from pathlib import Path
 from api.models import Instance, SheetWatcher
-import datetime
 import functools
 import logging
 
@@ -90,23 +89,33 @@ def pop_sheet_watcher(instance: Instance, name):
     instance.pop_job(name=name)
 
 
+@instance_op
+def get_sheet_watchers(instance: Instance) -> List[SheetWatcher]:
+    logging.info(f'Instance {instance}: retrieving SheetWatchers...')
+    return instance.get_jobs()
+
+
 '''
 BOT COMMANDS
 ~~~
 add(name, sheetLink, cells, time) - Create a new SheetWatcher with the given properties.
+    -> add_sheet_watcher(guild_id, name, sheet_link, cell_ranges, time)
 
 delete(name) - Delete the SheetWatcher with the given name.
+    -> pop_sheet_watcher(guild_id, name)
 
 show() - Return all active SheetWatchers.
+    -> get_sheet_watchers(guild_id)
 
 check() - Perform a check on all active SheetWatchers. Return the dead cells associated with each.
+    -> get_updates(guild_id, name)
 
 
 REPO COMMANDS
 ~~~
 create_instance(guild_id)
 
-add_sheet_watcher(guild_id, name, TrackedSheet, CellRange, time) - add SheetWatcher to Instance
+add_sheet_watcher(guild_id, name, sheet_link, cell_ranges, time) - add SheetWatcher to Instance
 
 pop_sheet_watcher(guild_id, name) - remove SheetWatcher from Instance
 

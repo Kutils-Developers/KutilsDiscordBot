@@ -17,4 +17,4 @@ async def on_ready():
 for cog in cogs:
     client.load_extension(f'cogs.{cog}')
     
-client.run(os.getenv('TOKEN'))
+client.run(os.getenv('DISC_TOKEN'))
