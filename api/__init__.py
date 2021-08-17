@@ -53,7 +53,8 @@ def instance_op(func):
             logging.debug(f'Accessing Instance with id {inst_key}')
             inst = Instance.read_from(guild_id=inst_key)
             logging.info(f'Instance accessed {str(inst)}')
-            func(inst, *args, **kwargs)
+            logging.info(f'Running command')
+            func_ret = func(inst, *args, **kwargs)
             logging.debug(f'Writing instance {str(inst)}')
             p = inst.write()
             logging.info(f'Instance written at {str(p)}')
@@ -61,7 +62,7 @@ def instance_op(func):
             logging.error(msg=f'Exception when doing InstanceOp: {str(e)}, returning None')
             return None
         logging.info('-----------------------------------------')
-        return inst
+        return func_ret or inst
 
     return wrapper
 
@@ -78,22 +79,21 @@ def create_instance(guild_id) -> Instance:
 
 @instance_op
 def add_sheet_watcher(instance: Instance, name, time):
-    logging.info(f'Instance {instance}: adding {name}...')
     sw = SheetWatcher(name=name, utc_offset=time)
     instance.add_job(sw)
 
 
 @instance_op
 def pop_sheet_watcher(instance: Instance, name):
-    logging.info(f'Instance {instance}: removing {name}...')
     instance.pop_job(name=name)
 
 
 @instance_op
 def get_sheet_watchers(instance: Instance) -> List[SheetWatcher]:
-    logging.info(f'Instance {instance}: retrieving SheetWatchers...')
-    return instance.get_jobs()
-
+    sw_str = ''
+    for j in instance.get_jobs():
+        sw_str += str(j)
+    return sw_str
 
 '''
 BOT COMMANDS

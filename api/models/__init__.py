@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from pathlib import Path
 from datetime import datetime
 from api.dataservices.google.sheets.utils import Cell
@@ -34,10 +34,14 @@ class SheetWatcher:
             return other.name == self.name
         return False
 
+    def get_updates(self):
+        return None
+
 
 @dataclass
 class Instance:
     """Bot Instance API Object. Assumes that Instances are uniquely defined by guild_id"""
+    # TODO use .get_jobs instead of interacting w obj directly
     guild_id: int
     install_date: str = str(datetime.now())
     jobs: Optional[List[SheetWatcher]] = field(default_factory=list)
@@ -54,21 +58,25 @@ class Instance:
         self.jobs.append(sw)
 
     def pop_job(self, name: str) -> SheetWatcher:
+        return self.jobs.pop(self.__get_job_idx(self.get_job(name)))
+
+    def get_job(self, name) -> SheetWatcher:
         try:
-            idx = next(i for i in range(len(self.jobs))
-                       if self.jobs[i].name == name)
-            return self.jobs.pop(idx)
+            return next(sw for sw in self.get_jobs() if sw.name == name)
         except StopIteration:
             raise APIError('No SheetWatcher with matching name')
 
-    def get_job(self, name):
-        try: 
-            return next(sw for sw in self.jobs if sw.name == name)
+    def __get_job_idx(self, sw) -> int:
+        try:
+            return next(i for i in range(len(self.jobs)) if self.jobs[i] == sw)
         except StopIteration:
-           raise APIError('No SheetWatcher with matching name')
-    
-    def get_jobs(self):
+            raise APIError('No SheetWatcher with matching name')
+
+    def get_jobs(self) -> List[SheetWatcher]:
         return self.jobs
+
+    def get_updates(self):
+        return [job.get_updates() for job in self.get_jobs()]
 
     # Persistence
 
