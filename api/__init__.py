@@ -90,10 +90,11 @@ def pop_sheet_watcher(instance: Instance, name):
 
 @instance_op
 def get_sheet_watchers(instance: Instance) -> List[SheetWatcher]:
-    sw_str = ''
-    for j in instance.get_jobs():
-        sw_str += str(j)
-    return sw_str
+    # sw_str = ''
+    # for j in instance.get_jobs():
+    #     sw_str += str(j)
+    # return sw_str
+    return instance.get_jobs()
 
 '''
 BOT COMMANDS

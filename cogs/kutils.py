@@ -17,12 +17,17 @@ class Kutils(commands.Cog):
     @commands.command()
     async def remove(self, ctx, name):
         await ctx.send(f'removing {name}...')
-        pop_sheet_watcher(ctx.guild.id, name)
+        try:
+            pop_sheet_watcher(ctx.guild.id, name)
+        except Exception as e:
+            await ctx.send("hi")
 
     @commands.command()
     async def show(self, ctx):
         await ctx.send("showing jobs...")
         jobs = get_sheet_watchers(ctx.guild.id)
+        for j in jobs:
+            await ctx.send(j)
 
     @commands.command()
     async def check(self, ctx):
