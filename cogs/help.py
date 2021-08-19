@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 
+KUTILS_COLOR_THEME = discord.Color.blue()
+
+
 # Help Cog
 class Help(commands.Cog):
     def __init__(self, client):
@@ -16,7 +19,9 @@ class Help(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send("Invalid command. Type '.kutils help' for more info.")
+            msg = "Invalid command. Type '.kutils help' for more info."
+            await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
+
 
 # TODO implement custom help command
 class CustomHelp(commands.HelpCommand):
@@ -31,6 +36,7 @@ class CustomHelp(commands.HelpCommand):
 
     async def send_command_help(self, command):
         return await super().send_command_help(command)
+
 
 def setup(client):
     client.add_cog(Help(client))

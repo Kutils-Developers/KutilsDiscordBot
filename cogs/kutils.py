@@ -15,28 +15,30 @@ class Kutils(commands.Cog):
     async def add(self, ctx, name, time):
         ret = add_sheet_watcher(ctx.guild.id, name, time)
         if not isinstance(ret, Exception):
-            await ctx.send(f'Added {name}!')
+            msg = f'Added {name}!'
+            await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
         else:
-            await ctx.send(f'API ERROR: {str(ret)}')
+            msg = f'API ERROR: {str(ret)}'
+            await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
 
     @commands.command(aliases=["delete"])
     async def remove(self, ctx, name):
-        if pop_sheet_watcher(ctx.guild.id, name):
-            await ctx.send(f'Removed {name}!')
+        ret = pop_sheet_watcher(ctx.guild.id, name)
+        if not isinstance(ret, Exception):
+            msg = f'Removed {name}!'
+            await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
         else:
-            await ctx.send("No job with matching name.")
+            msg = "No job with matching name"
+            await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
 
     @commands.command()
     async def show(self, ctx):
         jobs = get_sheet_watchers(ctx.guild.id)
-        print("got jobs")
-        print(jobs)
         if not jobs:
-            print("jobs empty")
-            embed = discord.Embed(title="No active jobs.", color=KUTILS_COLOR_THEME)
+            msg = "No active jobs."
+            embed = discord.Embed(title=msg, color=KUTILS_COLOR_THEME)
             embed.set_footer(text="To add a job, use .kutils add")
         else:
-            print("jobs not empty")
             embed = discord.Embed(title="Active Jobs", color=KUTILS_COLOR_THEME)
             # embed.set_author(name='Active Jobs', icon_url=KUTILS_ICON)
             for job in jobs:
