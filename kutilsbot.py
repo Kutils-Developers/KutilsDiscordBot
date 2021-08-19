@@ -9,6 +9,7 @@ cogs = ['kutils', 'help', 'misc']
 
 client = commands.Bot(command_prefix = '.kutils ', case_insensitive = True)
 
+
 @client.event
 async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=discord.Game('Kutils'))

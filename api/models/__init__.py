@@ -99,7 +99,7 @@ class Instance:
     def write_local(self) -> Path:
         local_path = api.LOCAL_OBJECT_PATH / str(self.guild_id)
         if local_path.exists():
-            logging.warning(
+            logging.info(
                 f'Path {str(local_path)} already exists for Instance {str(self)}, overwriting')
         with open(local_path, 'w') as fp:
             fp.write(jsons.dumps(self))

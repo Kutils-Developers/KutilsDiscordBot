@@ -60,7 +60,7 @@ def instance_op(func):
             logging.info(f'Instance written at {str(p)}')
         except Exception as e:
             logging.error(msg=f'Exception when doing InstanceOp: {str(e)}, returning None')
-            return None
+            return e
         logging.info('-----------------------------------------')
         return func_ret or inst
 
@@ -77,6 +77,14 @@ def create_instance(guild_id) -> Instance:
     return instance
 
 
+def instance_exists(guild_id) -> bool:
+    try:
+        Instance.read_from(guild_id)
+        return True
+    except Exception as e:
+        return False
+
+
 @instance_op
 def add_sheet_watcher(instance: Instance, name, time):
     sw = SheetWatcher(name=name, utc_offset=time)
@@ -90,10 +98,6 @@ def pop_sheet_watcher(instance: Instance, name):
 
 @instance_op
 def get_sheet_watchers(instance: Instance) -> List[SheetWatcher]:
-    # sw_str = ''
-    # for j in instance.get_jobs():
-    #     sw_str += str(j)
-    # return sw_str
     return instance.get_jobs()
 
 '''

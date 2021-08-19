@@ -14,12 +14,15 @@ class Misc(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        create_instance(guild.id)
+        if not instance_exists(guild.id):
+            create_instance(guild.id)
 
     @commands.command()
     async def rejoin(self, ctx):
         await ctx.send("rejoining...")
-        create_instance(ctx.guild.id)
+        if not instance_exists(ctx.guild.id):
+            create_instance(ctx.guild.id)
+
 
 
 def setup(client):
