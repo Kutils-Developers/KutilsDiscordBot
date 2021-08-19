@@ -62,7 +62,7 @@ def instance_op(func):
             logging.error(msg=f'Exception when doing InstanceOp: {str(e)}, returning None')
             return e
         logging.info('-----------------------------------------')
-        return func_ret or inst
+        return func_ret if func_ret is not None else inst
 
     return wrapper
 
