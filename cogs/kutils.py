@@ -28,7 +28,7 @@ class Kutils(commands.Cog):
             msg = f'Removed {name}!'
             await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
         else:
-            msg = "No job with matching name"
+            msg = f'API ERROR: {str(ret)}'
             await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
 
     @commands.command()

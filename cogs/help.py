@@ -19,8 +19,10 @@ class Help(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
-            msg = "Invalid command. Type '.kutils help' for more info."
-            await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
+            msg = "Invalid command."
+            embed = discord.Embed(title=msg, color=KUTILS_COLOR_THEME)
+            embed.set_footer(text="Type '.kutils help' for more info.")
+            await ctx.send(embed=embed)
 
 
 # TODO implement custom help command
