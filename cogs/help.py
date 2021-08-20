@@ -12,7 +12,7 @@ class Help(commands.Cog):
         help_attributes = {
             'help': 'Displays help for Kutils commands',
             'hidden': True,
-            'aliases': ['h', 'info']
+            'aliases': ['h']
         }
         help_obj = CustomHelp(command_attrs=help_attributes, verify_checks=False)
         client.help_command = help_obj
@@ -31,6 +31,17 @@ class Help(commands.Cog):
             msg = "To get started, type '.kutils help'."
             embed = discord.Embed(title="", description=msg, color=KUTILS_COLOR_THEME)
             await message.channel.send(embed=embed)
+
+    @commands.command(aliases=["i"])
+    async def info(self, ctx):
+        title = "About Kutils"
+        desc = "A service that automates checks for dead YouTube links on Google spreadsheets."
+        embed = discord.Embed(title=title, description=desc, color=KUTILS_COLOR_THEME)
+        embed.add_field(name="Bot Tag", value=self.client.user)
+        embed.add_field(name="Version", value="1.0")
+        embed.add_field(name="Authors", value="mecha#7999 & Brandon#0717", inline=False)
+        embed.set_footer(text="Type '.kutils help' to get started.")
+        await ctx.send(embed=embed)
 
 
 # TODO implement custom help command
