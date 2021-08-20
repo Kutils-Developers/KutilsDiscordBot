@@ -7,7 +7,7 @@ load_dotenv()
 
 cogs = ['kutils', 'help', 'misc']
 
-client = commands.Bot(command_prefix = '.kutils ', case_insensitive = True)
+client = commands.Bot(command_prefix=commands.when_mentioned_or('.kutils '), case_insensitive=True)
 
 
 @client.event

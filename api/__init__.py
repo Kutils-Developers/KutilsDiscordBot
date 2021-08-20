@@ -100,6 +100,12 @@ def pop_sheet_watcher(instance: Instance, name):
 def get_sheet_watchers(instance: Instance) -> List[SheetWatcher]:
     return instance.get_jobs()
 
+
+@instance_op
+def get_updates(instance: Instance, name: SheetWatcher):
+    return None
+
+
 '''
 BOT COMMANDS
 ~~~

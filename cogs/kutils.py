@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from api import *
-from api.models import SheetWatcher
 
 KUTILS_COLOR_THEME = discord.Color.blue()
 
@@ -40,7 +39,6 @@ class Kutils(commands.Cog):
             embed.set_footer(text="To add a job, use .kutils add")
         else:
             embed = discord.Embed(title="Active Jobs", color=KUTILS_COLOR_THEME)
-            # embed.set_author(name='Active Jobs', icon_url=KUTILS_ICON)
             for job in jobs:
                 embed.add_field(name=job.name, value=job.utc_offset)
             embed.set_footer(text="To add or remove jobs, use .kutils add/remove")
@@ -49,6 +47,33 @@ class Kutils(commands.Cog):
     @commands.command()
     async def check(self, ctx):
         await ctx.send("check")
+
+    @add.error
+    async def add_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.TooManyArguments):
+            msg = "Invalid number of arguments."
+            desc = ".kutils add [name] [time]"
+            embed = discord.Embed(title=msg, description=desc ,color=KUTILS_COLOR_THEME)
+            embed.set_footer(text="Type '.kutils help' for more info.")
+            await ctx.send(embed=embed)
+
+    @remove.error
+    async def remove_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.TooManyArguments):
+            msg = "Invalid number of arguments."
+            desc = ".kutils remove [name]"
+            embed = discord.Embed(title=msg, description=desc, color=KUTILS_COLOR_THEME)
+            embed.set_footer(text="Type '.kutils help' for more info.")
+            await ctx.send(embed=embed)
+
+    @show.error
+    async def show_error(self, ctx, error):
+        if isinstance(error, commands.TooManyArguments):
+            msg = "Invalid number of arguments."
+            desc = ".kutils show"
+            embed = discord.Embed(title=msg, description=desc, color=KUTILS_COLOR_THEME)
+            embed.set_footer(text="Type '.kutils help' for more info.")
+            await ctx.send(embed=embed)
 
 
 def setup(client):

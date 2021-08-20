@@ -9,7 +9,6 @@ class Misc(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
-        await ctx.send(ctx.guild.id)
         await ctx.send(f'pong {round(self.client.latency * 1000)}ms')
 
     @commands.Cog.listener()
@@ -22,7 +21,6 @@ class Misc(commands.Cog):
         await ctx.send("rejoining...")
         if not instance_exists(ctx.guild.id):
             create_instance(ctx.guild.id)
-
 
 
 def setup(client):

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+
 KUTILS_COLOR_THEME = discord.Color.blue()
 
 
@@ -24,10 +25,18 @@ class Help(commands.Cog):
             embed.set_footer(text="Type '.kutils help' for more info.")
             await ctx.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if (self.client.user.mentioned_in(message) and message.content.find(" ") < 0) or message.content == '.kutils':
+            msg = "To get started, type '.kutils help'."
+            embed = discord.Embed(title="", description=msg, color=KUTILS_COLOR_THEME)
+            await message.channel.send(embed=embed)
+
 
 # TODO implement custom help command
 class CustomHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
+        await self.get_destination().send("help command")
         return await super().send_bot_help(mapping)
 
     async def send_cog_help(self, cog):
