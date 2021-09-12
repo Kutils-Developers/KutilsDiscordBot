@@ -102,8 +102,10 @@ def get_sheet_watchers(instance: Instance) -> List[SheetWatcher]:
 
 
 @instance_op
-def get_updates(instance: Instance, name: SheetWatcher):
-    return None
+def get_updates(instance: Instance, sw_name: str = None):
+    if sw_name:
+        return instance.get_job(sw_name).get_updates()
+    return instance.get_updates()
 
 
 '''

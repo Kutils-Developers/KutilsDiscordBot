@@ -1,20 +1,31 @@
 from dataclasses import dataclass
+from typing import Optional
+
+from api.dataservices.utils import which_service
 
 
-@dataclass
 class Cell:
-    sheet = None
-    row_idx = 0
-    col_idx = ''
-    data = None
+    sheet: str
+    row_idx: int
+    col_idx: int
+    data: str
+    svc_type: str
+
+    def __init__(self, sheet, row_idx, col_idx, data):
+        self.sheet = sheet
+        self.row_idx = row_idx
+        self.col_idx = col_idx
+        self.data = data
+        self.svc_type = which_service(data)
 
     def get_url(self):
         if 'hyperlink' not in self.data['values'][0]:
             print(self.__str__() + " has error")
         return self.data['values'][0]['hyperlink']
 
-    def get_cell_url_relation(self, url_data_extractor):
-        return self, url_data_extractor(self.get_url())
+    def is_dead(self):
+        if self.svc_type == "youtube":
+            return
 
     def __str__(self):
         return self.sheet + ' ' + self.col_idx + str(self.row_idx)

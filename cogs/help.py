@@ -32,7 +32,7 @@ class Help(commands.Cog):
             embed = discord.Embed(title="", description=msg, color=KUTILS_COLOR_THEME)
             await message.channel.send(embed=embed)
 
-    @commands.command(aliases=["i"])
+    @commands.command(aliases=["i", "about"])
     async def info(self, ctx):
         title = "About Kutils"
         desc = "A service that automates checks for dead YouTube links on Google spreadsheets."
