@@ -3,6 +3,7 @@ from typing import List
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from pathlib import Path
+import logging
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -20,10 +21,10 @@ def get_google_credentials(scopes: List[str] = DEFAULT_GOOGLE_SCOPES):
 
 
 def build_service(svc_key: str, credentials=get_google_credentials()):
-    return build(GOOGLE_SERVICES[svc_key][0], GOOGLE_SERVICES[svc_key][1], credentials)
+    return build(GOOGLE_SERVICES[svc_key][0], GOOGLE_SERVICES[svc_key][1], credentials=credentials)
 
 
 sheets_svc = build_service('sheets')
 youtube_svc = build_service('youtube')
-print('services building')
+logging.info('services building...')
 

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from api.dataservices.google.youtube import is_dead_youtube_link
 from api.dataservices.utils import which_service
 
 
@@ -16,16 +17,17 @@ class Cell:
         self.row_idx = row_idx
         self.col_idx = col_idx
         self.data = data
-        self.svc_type = which_service(data)
+        self.svc_type = which_service(self.get_url())
 
     def get_url(self):
         if 'hyperlink' not in self.data['values'][0]:
             print(self.__str__() + " has error")
+            return
         return self.data['values'][0]['hyperlink']
 
     def is_dead(self):
         if self.svc_type == "youtube":
-            return
+            return is_dead_youtube_link(self.get_url())
 
     def __str__(self):
         return self.sheet + ' ' + self.col_idx + str(self.row_idx)

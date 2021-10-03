@@ -29,8 +29,8 @@ class SheetWatcher:
     """Assumes that a SheetWatcher is uniquely defined by their name"""
     # change time it updates, get the next time it updates, return its name, get all updates for a specific sheet on a timely basis
     name: str
-    utc_offset: Optional[int] = 72680
     tracked_sheet: Optional[TrackedSheet] = None
+    utc_offset: Optional[int] = 72680
 
     def get_name(self) -> str:
         return self.name

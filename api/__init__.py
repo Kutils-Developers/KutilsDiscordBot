@@ -8,7 +8,7 @@ from typing import List
 from api.support import APIError
 from dotenv import load_dotenv
 from pathlib import Path
-from api.models import Instance, SheetWatcher
+from api.models import Instance, SheetWatcher, TrackedSheet
 import functools
 import logging
 
@@ -86,8 +86,9 @@ def instance_exists(guild_id) -> bool:
 
 
 @instance_op
-def add_sheet_watcher(instance: Instance, name, time):
-    sw = SheetWatcher(name=name, utc_offset=time)
+def add_sheet_watcher(instance: Instance, name, sheet_id, cell_ranges, time):
+    ts = TrackedSheet(sheet_id, cell_ranges)
+    sw = SheetWatcher(name=name, tracked_sheet=ts, utc_offset=time)
     instance.add_job(sw)
 
 
@@ -103,7 +104,7 @@ def get_sheet_watchers(instance: Instance) -> List[SheetWatcher]:
 
 @instance_op
 def get_updates(instance: Instance, sw_name: str = None):
-    if sw_name:
+    if sw_name in instance.get_job_names():
         return instance.get_job(sw_name).get_updates()
     return instance.get_updates()
 

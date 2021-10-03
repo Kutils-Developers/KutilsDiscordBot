@@ -11,8 +11,8 @@ class Kutils(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def add(self, ctx, name, time):
-        ret = add_sheet_watcher(ctx.guild.id, name, time)
+    async def add(self, ctx, name, sheet_link, cell_ranges, time):
+        ret = add_sheet_watcher(ctx.guild.id, name, sheet_link, cell_ranges, time)
         if not isinstance(ret, Exception):
             msg = f'Added {name}!'
             await ctx.send(embed=discord.Embed(title=msg, color=KUTILS_COLOR_THEME))
@@ -46,7 +46,8 @@ class Kutils(commands.Cog):
 
     @commands.command()
     async def check(self, ctx):
-        await ctx.send("check")
+        dead_cells = get_updates(ctx.guild.id)
+        await ctx.send(dead_cells)
 
     @add.error
     async def add_error(self, ctx, error):

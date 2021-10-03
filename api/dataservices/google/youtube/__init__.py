@@ -45,12 +45,10 @@ def is_link_shortened(url: str) -> bool:
 def is_dead_youtube_link(url: str) -> bool:
     id = extract_youtube_ids_from_url(url)
     request = youtube_svc.videos().list(part="status,contentDetails", id=id)
-    print(type(request))
     try:
         response = request.execute()
     except Exception as e:
         logging.debug(url)
-        print(e)
         return True
 
     items = response['items']
@@ -59,7 +57,7 @@ def is_dead_youtube_link(url: str) -> bool:
 
 if __name__ == '__main__':
     print(is_dead_youtube_link("https://www.youtube.com/watch?v=icBYTc0ty6A"))
-    print("hi")
+
 
 
 
