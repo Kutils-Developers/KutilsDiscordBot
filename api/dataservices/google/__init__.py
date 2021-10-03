@@ -8,15 +8,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-default_google_scopes = ['https://www.googleapis.com/auth/youtube.readonly',
+DEFAULT_GOOGLE_SCOPES = ['https://www.googleapis.com/auth/youtube.readonly',
                          "https://www.googleapis.com/auth/spreadsheets.readonly"]
 
 GOOGLE_SERVICES = {'youtube': ['youtube', 'v3'], 'sheets': ['sheets', 'v4']}
 
 
-def get_google_credentials(scopes: List[str] = default_google_scopes):
+def get_google_credentials(scopes: List[str] = DEFAULT_GOOGLE_SCOPES):
     return service_account.Credentials.\
-        from_service_account_file(Path(os.environ['GOOGLE_CRED_JSON']))
+        from_service_account_file(Path(os.environ['GOOGLE_CRED_JSON']), scopes=scopes)
 
 
 def build_service(svc_key: str, credentials=get_google_credentials()):

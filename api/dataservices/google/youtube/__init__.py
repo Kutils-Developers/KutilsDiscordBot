@@ -8,7 +8,7 @@ delete_keywords = ['&feature', '&list', '&index', '&lc', '&ab_channel', '&t']
 # TODO redo youtube ID extraction with urlparse
 
 
-def extract_youtube_ids_from_urls(url: str) -> str:
+def extract_youtube_ids_from_url(url: str) -> str:
     if not is_youtube_video_url(url):
         return
     # TODO figure out what to return
@@ -43,7 +43,7 @@ def is_link_shortened(url: str) -> bool:
 
 
 def is_dead_youtube_link(url: str) -> bool:
-    id = extract_youtube_ids_from_urls(url)
+    id = extract_youtube_ids_from_url(url)
     request = youtube_svc.videos().list(part="status,contentDetails", id=id)
     print(type(request))
     try:
