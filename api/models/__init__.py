@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple
 from pathlib import Path
 from datetime import datetime
 from api.dataservices.google.sheets.utils import Cell
+from api.dataservices.google.sheets import get_cells
 from api.support import APIError
 import api
 import jsons
@@ -12,22 +13,36 @@ import logging
 
 
 @dataclass
-class CellRange:
-    range: List[List[Cell]]
-
-
-@dataclass
 class TrackedSheet:
-    sheet: str
-    cell_ranges: List[CellRange]
+    # change the sheet, add a cellrange, get updates for its own sheet
+    sheet_id: str
+    cell_ranges: List[str]
+
+    def get_updates(self):
+        # cell - initialize itself & know the service it is, returns if its dead or not
+        cells = get_cells(self.sheet_id, self.cell_ranges)
+        return [c for c in cells if c.is_dead()]
 
 
 @dataclass
 class SheetWatcher:
     """Assumes that a SheetWatcher is uniquely defined by their name"""
+    # change time it updates, get the next time it updates, return its name, get all updates for a specific sheet on a timely basis
     name: str
-    utc_offset: int
     tracked_sheet: Optional[TrackedSheet] = None
+    utc_offset: Optional[int] = 72680
+
+    def get_name(self) -> str:
+        return self.name
+
+    def set_name(self, newname: str):
+        self.name = newname
+
+    def set_tracked_sheet(self, ts: TrackedSheet):
+        self.tracked_sheet = ts
+
+    def get_tracked_sheet(self) -> TrackedSheet:
+        return self.tracked_sheet
 
     def __eq__(self, other):
         if type(other) == type(self):
@@ -35,7 +50,9 @@ class SheetWatcher:
         return False
 
     def get_updates(self):
-        return None
+        if not self.tracked_sheet:
+            raise APIError(f'job {self.name} does not have a TrackedSheet')
+        return self.tracked_sheet.get_updates()
 
 
 @dataclass
@@ -75,8 +92,11 @@ class Instance:
     def get_jobs(self) -> List[SheetWatcher]:
         return self.jobs
 
-    def get_updates(self):
-        return [job.get_updates() for job in self.get_jobs()]
+    def get_updates(self) -> List[Cell]:
+        cells = []
+        for j in self.jobs:
+            cells.extend(j.get_updates())
+        return cells
 
     # Persistence
 

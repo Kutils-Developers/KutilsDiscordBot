@@ -32,7 +32,7 @@ class Help(commands.Cog):
             embed = discord.Embed(title="", description=msg, color=KUTILS_COLOR_THEME)
             await message.channel.send(embed=embed)
 
-    @commands.command(aliases=["i"])
+    @commands.command(aliases=["about"])
     async def info(self, ctx):
         title = "About Kutils"
         desc = "A service that automates checks for dead YouTube links on Google spreadsheets."
@@ -46,9 +46,29 @@ class Help(commands.Cog):
 
 # TODO implement custom help command
 class CustomHelp(commands.HelpCommand):
+    def get_command_signature(self, command):
+        return '%s %s' % (command.qualified_name, command.signature)
+
     async def send_bot_help(self, mapping):
-        await self.get_destination().send("help command")
-        return await super().send_bot_help(mapping)
+        title = "Kutils Help"
+        embed = discord.Embed(title=title, color=KUTILS_COLOR_THEME)
+
+        for cog, command in mapping.items():
+            print(command)
+            _filtered = []
+            for c in command:
+                _filtered.append(c)
+                if isinstance(c, commands.Group):
+                    [_filtered.append(subc) for subc in c.commands]
+
+            filtered = await self.filter_commands(_filtered, sort=True)
+            command_signatures = [self.get_command_signature(c) for c in filtered]
+            if command_signatures:
+                cog_name = getattr(cog, 'qualified_name', 'Other')
+                embed.add_field(name=cog_name, value='\n'.join(command_signatures), inline=False)
+
+        channel = self.get_destination()
+        await channel.send(embed=embed)
 
     async def send_cog_help(self, cog):
         return await super().send_cog_help(cog)
@@ -57,7 +77,19 @@ class CustomHelp(commands.HelpCommand):
         return await super().send_group_help(group)
 
     async def send_command_help(self, command):
-        return await super().send_command_help(command)
+        embed = discord.Embed(title=self.get_command_signature(command))
+        embed.add_field(name='Command Help:', value=command.help)
+        alias = command.aliases
+        if alias:
+            embed.add_field(name='Aliases', value=', '.join(alias), inline=False)
+
+        channel = self.get_destination()
+        await channel.send(embed=embed)
+
+    async def send_error_message(self, error):
+        embed = discord.Embed(title='Help command error!', description=error, color=KUTILS_COLOR_THEME)
+        channel = self.get_destination()
+        await channel.send(embed=embed)
 
 
 def setup(client):

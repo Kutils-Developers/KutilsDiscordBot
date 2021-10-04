@@ -17,5 +17,7 @@ import jsons
 if __name__ == '__main__':
     logging.info('Running API tester')
     api.create_instance(123)
-    api.add_sheet_watcher(123, 'hi', 10)
-    api.pop_sheet_watcher(123, name='hi')
+    api.add_sheet_watcher(123, "rvcord", "1lnL3y9L9E4tOaR8rHRBdIyme1PVoKRudYzSF38B07C0", ['Live Performances!D10:D18'], 10)
+    dead_cells = api.get_updates(123, "rvcord")
+    for i in dead_cells:
+        print(i)
