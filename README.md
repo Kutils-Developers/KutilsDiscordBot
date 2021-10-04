@@ -1,5 +1,7 @@
 # KutilsDiscordBot
+A Discord Bot that reports dead hyperlinks on a Google Sheet for services like YouTube and Twitter. "Dead" links include when a YouTube video is made private and when Twitter accounts are inactive past a certain month threshold.
 
+This project is an implementation of the original script-bank [mech-a/Kutils](https://github.com/mech-a/Kutils) to be a highly-integratable service for K-pop communities.
 
 ## Developer Setup
 Requirements: Python 3.7+
