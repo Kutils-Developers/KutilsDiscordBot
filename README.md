@@ -14,7 +14,9 @@ GOOGLE_CRED_JSON=path_to_google_service_account_credentials
 ```
 4. Run the Discord Bot using `python3 kutilsbot.py`
 
-## Install on your Discord Server
+We utilize logging heavily - please configure the logging level for your application 
 
+## Install on your Discord Server
+Soon!
 
 ## Architecture
