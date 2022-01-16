@@ -23,3 +23,6 @@ Soon!
 
 ## Architecture
 We follow a [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) design pattern throughout our code. Our view is the Discord Bot that can be found in `kutilsbot.py` which uses abstracted components called cogs in the `cogs/` folder. Our controller is the `api/__init__.py` file which defines our objects and persists individual instances of the bot running on different servers. The model is the `api/models/__init__.py` file which contains the architecture of the program.
+
+### Developers
+Project began by [Gaurav Bhatnagar](https://github.com/mech-a/), collaborating with [Brandon Yan](https://github.com/brandonjyan/)
